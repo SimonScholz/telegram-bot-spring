@@ -1,5 +1,8 @@
 package com.simonscholz.bot.weather.service;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -58,11 +61,18 @@ public class TelegramBotServiceImpl implements TelegramBotService {
 
 			if (indexOf > -1) {
 				String queryCityString = text.substring(indexOf).trim();
+				try {
+					queryCityString = URLEncoder.encode(queryCityString, "UTF-8");
+				} catch (UnsupportedEncodingException e) {
+					LOG.error(e.getMessage(), e);
+				}
+				
+				String encodedCityString = queryCityString;
 
 				if (text.startsWith("/now") || text.startsWith("/week")) {
 					Mono<MultiValueMap<String, String>> formDataMono = dmiCityRepository.findByLabelContainingIgnoreCase(queryCityString).switchIfEmpty(dmiWebClient.get()
 							.uri(qBuilder -> qBuilder.path("/getData").queryParam("type", "forecast")
-									.queryParam("term", queryCityString).build())
+									.queryParam("term", encodedCityString).build())
 							.retrieve().bodyToFlux(DmiCity.class).next()).flatMap(dmiCityRepository::save).map(dmiCity -> {
 								MultiValueMap<String, String> formData = new LinkedMultiValueMap<>(2);
 								formData.set("chat_id", chatId);
