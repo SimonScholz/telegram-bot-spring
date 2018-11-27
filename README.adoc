@@ -1,0 +1,208 @@
+= Telegram Bot Spring Dispatcher
+Simon Scholz (c) 2018
+Version 1.0, 27.11.2018
+:experimental:
+:icons:
+:toc:
+:toc-title:
+:sectnums:
+:imagesdir: ./img
+:textselfreference: tutorial
+
+[abstract]
+Telegram bot webhook implementation with Spring Boot Webflux
+
+== Starting the Spring Boot application
+
+You can either import the project into the Spring Tool Suite (https://spring.io/tools/sts/all) by using the Buildship (https://github.com/eclipse/buildship/blob/master/docs/user/Installation.md) import wizard and start it from the IDE or simply start the application by running the `bootRun` Gradle task.
+
+[source, console]
+----
+./gradlew bRun
+----
+
+== Using a Webhook
+
+Usually you'd want to use a webhook, if you're providing a rest endpoint like this app does.
+
+The webhook should point the _/telegram/webhook_ endpoint, e.g., https://{your-domain}/telegram/webhook.
+
+=== Set a webhook
+
+A nice way to set the webhook is by using _curl_:
+
+[source, console]
+----
+curl -F "url=https://{your-domain}/telegram/webhook" https://api.telegram.org/bot{your-bots-api-token}/setWebhook
+----
+
+For a custom ssl certificate(telegram required pem) the following command can be used:
+
+[source, console]
+----
+curl -F "url=https://{your-domain}/webhook" -F "certificate=@/home/simon/ssl/keystore.pem" https://api.telegram.org/bot{your api token}/setWebhook
+----
+
+TIP: See https://core.telegram.org/bots/api#setwebhook for further information about setting a webhook.
+
+=== SSL secure the webhook endpoint
+
+To use a webhook for telegram you need to use port 443 or 8443 with ssl.
+See <<letsencrypt>> for further information about ssl security for your domain.
+
+This is also a nice introduction how to achieve that: https://dzone.com/articles/spring-boot-secured-by-lets-encrypt
+
+==== Secure Spring App directly
+
+To run this Spring Boot application with your own bot you usually have to adjust the application.yml file. (https://github.com/SimonScholz/telegram-bot-spring-dispatcher/blob/master/backend/telegram-bot-dispatcher/src/main/resources/application.yml)
+
+[source, properties]
+----
+server:
+  port: 443
+  ssl:
+    key-store: /{path-to-file}/keystore.p12 <1>
+    key-store-password: *** your password ***
+    key-store-type: PKCS12
+    key-alias: {your-key-alias}
+----
+<1> See <<letsencrypt>> for *.p12 key store generation
+
+==== Use Nginx for SSL encryption
+
+You can install Nginx on your server and add the following config files.
+
+http.conf.j2
+
+[source, config]
+----
+server {
+    listen 80 default_server;
+
+    server_name _;
+
+    return 301 https://$host$request_uri; <1>
+}
+----
+<1> Redirect port 80 (http) to port 443 (https)
+
+Then add the following https.conf.j2 Nginx config:
+
+[source, config]
+----
+upstream app-upstream {
+    server localhost:{port}; <1>
+}
+
+server {
+    listen       443 default ssl;
+    server_name  {{ service_host }};
+
+    #charset koi8-r;
+    #access_log  /var/log/nginx/host.access.log  main;
+
+    ssl_certificate /etc/letsencrypt/live/{{ service_host }}/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/{{ service_host }}/privkey.pem;
+    ssl_session_cache shared:SSL:10m;
+    ssl_session_timeout 10m;
+    ssl_dhparam /etc/ssl/certs/dhparam.pem;
+
+    ssl_session_tickets off;
+    ssl_stapling on;
+    ssl_stapling_verify on;
+    add_header X-Frame-Options DENY;
+    add_header X-Content-Type-Options nosniff;
+    add_header X-XSS-Protection "1; mode=block";
+
+    ssl_prefer_server_ciphers on;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers ECDHE-RSA-AES256-GCM-SHA512:DHE-RSA-AES256-GCM-SHA512:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-SHA384;
+    ssl_ecdh_curve secp384r1;
+
+
+    location / {
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header Host $http_host;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_redirect off;
+        proxy_pass http://app-upstream;
+    }
+}
+----
+<1> Substitute _{port}_ with your server apps port
+
+
+== Technologies
+
+* Spring Boot 2.0 with Webflux
+* Reactive MongoDB
+* Lombok
+* Reactor IO
+* Gradle
+
+== Questions
+
+Please make use of this bot, share your knowledge and adapt it for your needs. 
+
+== Contributing
+
+Feedback is highly appreciated. You may open issues, send pull requests or simply contact me.
+
+[[letsencrypt]]
+== Let's Encrypt
+
+Add ssl certificate to your domain.
+
+=== For Fritz!Box AVM Router
+
+AVM is currently working on a setting for Let's Encrypt and their routers.
+
+See https://avm.de/fritz-labor/fritz-labor-fuer-fritzbox-7490-und-7590/lets-encrypt/
+
+=== Using certbot
+
+[source, console]
+----
+cd {your home directory}
+
+mkdir certbot
+
+cd certbot
+
+wget https://dl.eff.org/certbot-auto
+
+chmod +x certbot-auto
+
+./certbot-auto certonly -a standalone -d {your domain name -> example.ddns.net}
+
+cd /etc/letsencrypt/live/{your domain name -> example.ddns.net}/
+
+openssl pkcs12 -export -in fullchain.pem -inkey privkey.pem -out keystore.p12 -name telegram-bot -CAfile chain.pem -caname root
+
+----
+
+The _keystore.p12_ file has to be moved to a location, which can be accessed by the user, which starts the spring boot app service. The `chown -R {username} and chgrp -R {username}` command are helpful here.
+
+The conversion to a _keystore.p12_ file with _openssl_ is necessary, because spring boot does not work with _*.pem_ files, but with _*.p12_ files.
+See _server.ssl.key-store_ property in _application.properties_ file of the spring boot application.
+
+
+=== Renew the certificate
+
+[source, console]
+----
+
+cd certbot
+
+./certbot-auto renew
+
+cd /etc/letsencrypt/live/{your domain name -> example.ddns.net}/
+
+openssl pkcs12 -export -in fullchain.pem -inkey privkey.pem -out keystore.p12 -name telegram-bot -CAfile chain.pem -caname root
+----
+
+
+== Sources
+
+https://core.telegram.org/bots/api
+
