@@ -12,6 +12,15 @@ Version 1.0, 27.11.2018
 [abstract]
 Telegram bot webhook implementation with Spring Boot Webflux
 
+== Technologies
+
+* Spring Boot 2.0 with Webflux
+* Reactive MongoDB
+* Lombok
+* Reactor IO
+* Gradle
+* (Nginx)
+
 == Starting the Spring Boot application
 
 You can either import the project into the Spring Tool Suite (https://spring.io/tools/sts/all) by using the Buildship (https://github.com/eclipse/buildship/blob/master/docs/user/Installation.md) import wizard and start it from the IDE or simply start the application by running the `bootRun` Gradle task.
@@ -54,7 +63,7 @@ This is also a nice introduction how to achieve that: https://dzone.com/articles
 
 ==== Secure Spring App directly
 
-To run this Spring Boot application with your own bot you usually have to adjust the application.yml file. (https://github.com/SimonScholz/telegram-bot-spring-dispatcher/blob/master/backend/telegram-bot-dispatcher/src/main/resources/application.yml)
+To run this Spring Boot application with your own bot you usually have to adjust the application.yml file.
 
 [source, properties]
 ----
@@ -130,15 +139,6 @@ server {
 }
 ----
 <1> Substitute _{port}_ with your server apps port
-
-
-== Technologies
-
-* Spring Boot 2.0 with Webflux
-* Reactive MongoDB
-* Lombok
-* Reactor IO
-* Gradle
 
 == Questions
 
