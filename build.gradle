@@ -11,6 +11,7 @@ buildscript {
 }
 
 plugins {
+	id 'org.asciidoctor.convert' version '1.5.9.2'
     id 'io.franzbecker.gradle-lombok' version '1.14'
     id 'java'
     id 'eclipse'
@@ -28,6 +29,24 @@ repositories {
 	maven { url 'https://dl.bintray.com/simon-scholz/telegram-bot' }
 }
 
+asciidoctor {
+  sourceDir = project.projectDir
+  sources {
+    include 'README.adoc'
+  }
+  outputDir = file('build/docs')
+}
+
+asciidoctor.doLast {
+    copy {
+        from 'build/docs/html5'
+        into "$projectDir"
+        include 'README.html'
+		rename { String fileName ->
+    		fileName.replace("README", "index")
+  		}
+    }
+}
 
 dependencies {
 	implementation('org.springframework.boot:spring-boot-starter-actuator')
