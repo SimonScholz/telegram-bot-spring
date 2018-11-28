@@ -8,18 +8,18 @@ import lombok.Data;
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DmiCity {
-	private int id;
+    private int id;
 
-	private String label;
+    private String label;
 
-	private double longitude;
+    private double longitude;
 
-	private double latitude;
+    private double latitude;
 
-	private String country;
+    private String country;
 
-	@JsonAlias("country_code")
-	private String countryCode;
+    @JsonAlias("country_code")
+    private String countryCode;
 
-	private String city;
+    private String city;
 }

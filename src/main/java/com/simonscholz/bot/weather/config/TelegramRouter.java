@@ -21,15 +21,15 @@ import de.simonscholz.telegram.bot.api.domain.Update;
 
 @Configuration
 public class TelegramRouter {
-	@Bean
-	public RouterFunction<ServerResponse> route(TelegramBotService botService, DmiCityRepository dmiCityRepository) {
-		return RouterFunctions
-				.route(POST("/telegram/webhook").and(accept(MediaType.APPLICATION_JSON))
-						.and(contentType(MediaType.APPLICATION_JSON)),
-						request -> ok().build(botService.webhook(request.bodyToMono(Update.class))))
-				.andRoute(GET("/query"), req -> ok().body(dmiCityRepository.findAll(), DmiCity.class))
-				.andRoute(GET("/query/{city}"),
-						req -> ok().body(dmiCityRepository.findByLabelContainingIgnoreCase(req.pathVariable("city")),
-								DmiCity.class));
-	}
+    @Bean
+    public RouterFunction<ServerResponse> route(TelegramBotService botService, DmiCityRepository dmiCityRepository) {
+        return RouterFunctions
+                .route(POST("/telegram/webhook").and(accept(MediaType.APPLICATION_JSON))
+                        .and(contentType(MediaType.APPLICATION_JSON)),
+                        request -> ok().build(botService.webhook(request.bodyToMono(Update.class))))
+                .andRoute(GET("/query"), req -> ok().body(dmiCityRepository.findAll(), DmiCity.class))
+                .andRoute(GET("/query/{city}"),
+                        req -> ok().body(dmiCityRepository.findByLabelContainingIgnoreCase(req.pathVariable("city")),
+                                DmiCity.class));
+    }
 }

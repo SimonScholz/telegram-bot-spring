@@ -10,14 +10,14 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 @Configuration
 public class SecurityConfig {
 
-	@Bean
-	public PasswordEncoder passwordEncoder() {
-		return PasswordEncoderFactories.createDelegatingPasswordEncoder();
-	}
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+    }
 
-	@Bean
-	public SecurityWebFilterChain securitygWebFilterChain(ServerHttpSecurity http) {
-		return http.csrf().disable().cors().disable().authorizeExchange().anyExchange().permitAll().and().build();
+    @Bean
+    public SecurityWebFilterChain securitygWebFilterChain(ServerHttpSecurity http) {
+        return http.csrf().disable().cors().disable().authorizeExchange().anyExchange().permitAll().and().build();
 
-	}
+    }
 }
