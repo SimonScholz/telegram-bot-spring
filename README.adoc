@@ -1,7 +1,4 @@
-= Spring Webflux Telegram Bot 
-image:https://travis-ci.org/SimonScholz/telegram-bot-spring.svg?branch=master["Build Status", link="https://travis-ci.org/SimonScholz/telegram-bot-spring"]
-image:https://codecov.io/gh/SimonScholz/telegram-bot-spring/branch/master/graph/badge.svg["Code Coverage Status", link="https://codecov.io/gh/SimonScholz/telegram-bot-spring"]
-
+= Spring Webflux Telegram Bot image:https://travis-ci.org/SimonScholz/telegram-bot-spring.svg?branch=master["Build Status", link="https://travis-ci.org/SimonScholz/telegram-bot-spring"] image:https://codecov.io/gh/SimonScholz/telegram-bot-spring/branch/master/graph/badge.svg["Code Coverage Status", link="https://codecov.io/gh/SimonScholz/telegram-bot-spring"]
 Simon Scholz (c) 2018
 Version 1.0, 27.11.2018
 :experimental:
