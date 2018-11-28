@@ -12,7 +12,8 @@ public class TelegramConfig {
 
 	@Bean
 	@Qualifier("telegram")
-	public WebClient webclientTelegram(@Value("${telegram.bot.url:https://api.telegram.org/bot}") String telegramBotUrl,
+	public WebClient webclientTelegram(
+			@Value("${telegram.bot.url:https://api.telegram.org/bot}") String telegramBotUrl,
 			Environment environment) {
 		String telegramBotToken = environment.getProperty("telegram.bot.token");
 		return WebClient.create(telegramBotUrl + telegramBotToken);

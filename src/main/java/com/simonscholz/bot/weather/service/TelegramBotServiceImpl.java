@@ -27,7 +27,7 @@ public class TelegramBotServiceImpl implements TelegramBotService {
 	private static final String NOW_MODE = "dag1_2";
 	private static final String WEEK_MODE = "dag3_9";
 
-	private static final ParameterizedTypeReference<MultiValueMap<String, String>> typeReference = new ParameterizedTypeReference<MultiValueMap<String, String>>() {
+	private static final ParameterizedTypeReference<MultiValueMap<String, String>> TYPE_REFERENCE = new ParameterizedTypeReference<MultiValueMap<String, String>>() {
 	};
 
 	private static final Logger LOG = LoggerFactory.getLogger(TelegramBotServiceImpl.class);
@@ -66,14 +66,17 @@ public class TelegramBotServiceImpl implements TelegramBotService {
 				} catch (UnsupportedEncodingException e) {
 					LOG.error(e.getMessage(), e);
 				}
-				
+
 				String encodedCityString = queryCityString;
 
 				if (text.startsWith("/now") || text.startsWith("/week")) {
-					Mono<MultiValueMap<String, String>> formDataMono = dmiCityRepository.findByLabelContainingIgnoreCase(queryCityString).switchIfEmpty(dmiWebClient.get()
-							.uri(qBuilder -> qBuilder.path("/getData").queryParam("type", "forecast")
-									.queryParam("term", encodedCityString).build())
-							.retrieve().bodyToFlux(DmiCity.class).next()).flatMap(dmiCityRepository::save).map(dmiCity -> {
+					Mono<MultiValueMap<String, String>> formDataMono = dmiCityRepository
+							.findByLabelContainingIgnoreCase(queryCityString)
+							.switchIfEmpty(dmiWebClient.get()
+									.uri(qBuilder -> qBuilder.path("/getData").queryParam("type", "forecast")
+											.queryParam("term", encodedCityString).build())
+									.retrieve().bodyToFlux(DmiCity.class).next())
+							.flatMap(dmiCityRepository::save).map(dmiCity -> {
 								MultiValueMap<String, String> formData = new LinkedMultiValueMap<>(2);
 								formData.set("chat_id", chatId);
 
@@ -92,8 +95,9 @@ public class TelegramBotServiceImpl implements TelegramBotService {
 								return formData;
 							});
 
-					return telegramWebClient.post().uri("/sendPhoto").contentType(MediaType.APPLICATION_FORM_URLENCODED)
-							.body(BodyInserters.fromPublisher(formDataMono, typeReference)).exchange().then();
+					return telegramWebClient.post().uri("/sendPhoto")
+							.contentType(MediaType.APPLICATION_FORM_URLENCODED)
+							.body(BodyInserters.fromPublisher(formDataMono, TYPE_REFERENCE)).exchange().then();
 				}
 			}
 			return Mono.empty();

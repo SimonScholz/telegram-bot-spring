@@ -1,5 +1,6 @@
 package com.simonscholz.bot.weather.domain;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import lombok.Data;
@@ -17,7 +18,8 @@ public class DmiCity {
 
 	private String country;
 
-	private String country_code;
+	@JsonAlias("country_code")
+	private String countryCode;
 
 	private String city;
 }
