@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.web.reactive.function.client.WebClient;
 
 @Configuration
@@ -12,7 +13,8 @@ public class TelegramConfig {
 	@Bean
 	@Qualifier("telegram")
 	public WebClient webclientTelegram(@Value("${telegram.bot.url:https://api.telegram.org/bot}") String telegramBotUrl,
-			@Value("${telegram.bot.token}") String telegramBotToken) {
+			Environment environment) {
+		String telegramBotToken = environment.getProperty("telegram.bot.token");
 		return WebClient.create(telegramBotUrl + telegramBotToken);
 	}
 
