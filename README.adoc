@@ -36,6 +36,13 @@ Usually you'd want to use a webhook, if you're providing a rest endpoint like th
 
 The webhook should point the _/telegram/webhook_ endpoint, e.g., https://{your-domain}/telegram/webhook.
 
+== Sample Update for the webhook
+
+[source, console]
+----
+curl -H "Content-Type: application/json" -X POST -d '{"update_id":463166687, "message":{"message_id":256,"from":{"id":{your-user-id},"is_bot":false,"first_name":"Simon","last_name":"Scholz","language_code":"en-US"},"chat":{"id":{your-chat-id},"first_name":"Simon","last_name":"Scholz","type":"private"},"date":1519229850,"text":"/now Hamburg","entities":[{"offset":0,"length":4,"type":"bot_command"}]}}' http://localhost:8080/telegram/webhook
+----
+
 === Set a webhook
 
 A nice way to set the webhook is by using _curl_:
