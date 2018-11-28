@@ -27,8 +27,8 @@ public class TelegramBotServiceImpl implements TelegramBotService {
     private static final String NOW_MODE = "dag1_2";
     private static final String WEEK_MODE = "dag3_9";
 
-    private static final ParameterizedTypeReference<MultiValueMap<String, String>> TYPE_REFERENCE = new ParameterizedTypeReference<MultiValueMap<String, String>>() {
-    };
+    private static final ParameterizedTypeReference<MultiValueMap<String, String>> TYPE_REFERENCE =
+            new ParameterizedTypeReference<MultiValueMap<String, String>>() { };
 
     private static final Logger LOG = LoggerFactory.getLogger(TelegramBotServiceImpl.class);
     private WebClient telegramWebClient;
@@ -130,11 +130,11 @@ public class TelegramBotServiceImpl implements TelegramBotService {
         sb.append(System.lineSeparator());
         sb.append("You wanna have these nice dmi.dk weather charts, right? ");
         sb.append(System.lineSeparator());
-        sb.append(
-                "You can get these by using the /now + {your home town name} or /week + {your home town name} or by simply sending me your location. ");
+        sb.append("You can get these by using the /now + {your home town name}");
+        sb.append(" or /week + {your home town name} or by simply sending me your location.");
         sb.append(System.lineSeparator());
-        sb.append(
-                "The /now command shows the weather forecast for the next 3 days and the /week command is used for the week beginning after the next 3 days.");
+        sb.append("The /now command shows the weather forecast for the next 3 days ");
+        sb.append("and the /week command is used for the week beginning after the next 3 days.");
         return sb.toString();
     }
 }
