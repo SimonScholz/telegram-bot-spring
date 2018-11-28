@@ -15,6 +15,8 @@ plugins {
     id 'io.franzbecker.gradle-lombok' version '1.14'
     id 'java'
     id 'eclipse'
+	id 'jacoco'
+	id 'checkstyle'
 }
 
 apply plugin: 'org.springframework.boot'
@@ -28,6 +30,35 @@ repositories {
 	jcenter()
 	maven { url 'https://dl.bintray.com/simon-scholz/telegram-bot' }
 }
+
+dependencies {
+	implementation('org.springframework.boot:spring-boot-starter-actuator')
+	implementation('org.springframework.boot:spring-boot-starter-data-mongodb-reactive')
+	implementation('org.springframework.boot:spring-boot-starter-security')
+	implementation('org.springframework.boot:spring-boot-starter-webflux')
+	implementation('telegram-bot:telegram-bot-java-api:0.1.1')
+	testImplementation('org.springframework.boot:spring-boot-starter-test')
+	testImplementation('io.projectreactor:reactor-test')
+	testImplementation('org.springframework.security:spring-security-test')
+	testImplementation('de.flapdoodle.embed:de.flapdoodle.embed.mongo')
+}
+
+// Jacoco and code coverage setup
+jacocoTestReport {
+    reports {
+        xml.enabled true
+        html.enabled true
+        csv.enabled false
+    }
+}
+
+check.dependsOn jacocoTestReport
+
+// checkstyle setup
+checkstyle {
+    configFile file("checkstyle.xml")
+}
+
 
 asciidoctor {
   sourceDir = project.projectDir
@@ -46,16 +77,4 @@ asciidoctor.doLast {
     		fileName.replace("README", "index")
   		}
     }
-}
-
-dependencies {
-	implementation('org.springframework.boot:spring-boot-starter-actuator')
-	implementation('org.springframework.boot:spring-boot-starter-data-mongodb-reactive')
-	implementation('org.springframework.boot:spring-boot-starter-security')
-	implementation('org.springframework.boot:spring-boot-starter-webflux')
-	implementation('telegram-bot:telegram-bot-java-api:0.1.1')
-	testImplementation('org.springframework.boot:spring-boot-starter-test')
-	testImplementation('io.projectreactor:reactor-test')
-	testImplementation('org.springframework.security:spring-security-test')
-	testImplementation('de.flapdoodle.embed:de.flapdoodle.embed.mongo')
 }
