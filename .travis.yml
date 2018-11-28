@@ -12,6 +12,8 @@ cache:
   - $HOME/.m2
   - $HOME/.gradle
 
+script: "./gradlew build"
+
 # integration with codecov
 after_success:
 - bash <(curl -s https://codecov.io/bash)
