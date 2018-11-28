@@ -1,4 +1,4 @@
-= Spring Webflux Telegram Bot 
+= Spring Webflux Telegram Bot image:https://travis-ci.org/SimonScholz/telegram-bot-spring.svg?branch=master["Build Status", link="https://travis-ci.org/SimonScholz/telegram-bot-spring"]
 Simon Scholz (c) 2018
 Version 1.0, 27.11.2018
 :experimental:
